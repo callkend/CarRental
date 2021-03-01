@@ -12,8 +12,9 @@ Public Class CarRental
     Dim mileageCharge As Double
     Dim daysCharge As Integer
 
-
+    'Runs several validations of user inputs, and does calculations
     Private Sub CalculateButton_Click(sender As Object, e As EventArgs) Handles CalculateButton.Click
+        'Checks for any errors in user inputs
         If Validater(CustomerNameTextBox.Text, False) = "is empty" Then
             problem = True
             problemMessage(numberOfProblems) = "Name text box is empty "
@@ -104,8 +105,10 @@ Public Class CarRental
             numberOfDays = CInt(NumberOfDaysTextBox.Text)
         End If
 
+        'If error occurred displays errors in message box 
         If problem = True Then
             Dim message As String = ""
+
             numberOfProblems -= 1
             For i = 0 To numberOfProblems
                 message += $"{i + 1}." + problemMessage(i) + vbCrLf
@@ -113,15 +116,19 @@ Public Class CarRental
             MessageBox.Show(message, "Errors")
             numberOfProblems = 0
             problem = False
+            'If there is no error calculations are done
         Else
+            'Finds miles driven
             If MilesRadioButton.Checked = True Then
                 numberOfMilesDriven = endingOdometer - beginningOdometer
                 DistanceDrivenInMilesTextBox.Text = CStr(numberOfMilesDriven) + "mi"
             ElseIf KilometersRadioButton.Checked = True Then
+                'If input is kilometers converts to miles.
                 numberOfMilesDriven = CInt((endingOdometer - beginningOdometer) * 0.62)
                 DistanceDrivenInMilesTextBox.Text = CStr(numberOfMilesDriven) + "mi"
             End If
 
+            'Calculates mileage charge.
             If numberOfMilesDriven <= 200 Then
                 MileageChargeTextBox.Text = "0"
             Else
@@ -136,12 +143,16 @@ Public Class CarRental
                 End If
             End If
 
+            'Displays mileage charge
             MileageChargeTextBox.Text = "$" + CStr(Math.Round(mileageCharge, 2))
 
+            'Calculates day charge
             daysCharge = numberOfDays * 15
 
+            'Displays day charge
             DayChargeTextBox.Text = "$" + CStr(daysCharge)
 
+            'Calculates total discount and displays amount owed.
             If AAAMemberDiscountCheckBox.Checked = True And SeniorCitzenDiscountCheckBox.Checked = False Then
                 YouOweTextBox.Text = "$" + CStr(0.95 * (Math.Round(mileageCharge, 2) + daysCharge))
                 MinusDiscountTextBox.Text = "$" + CStr(0.05 * (Math.Round(mileageCharge, 2) + daysCharge))
@@ -156,18 +167,22 @@ Public Class CarRental
                 MinusDiscountTextBox.Text = "$" + CStr(0 * (Math.Round(mileageCharge, 2) + daysCharge))
             End If
 
+            'Adds calculated data to summary
             Summary(CDbl(numberOfMilesDriven), CDbl(YouOweTextBox.Text.Replace("$", "")), False)
         End If
     End Sub
 
+    'Grabs summary information
     Private Sub SummaryButton_Click(sender As Object, e As EventArgs) Handles SummaryButton.Click
         Summary(0, 0, True)
     End Sub
 
+    'Runs clear sub
     Private Sub ClearButton_Click(sender As Object, e As EventArgs) Handles ClearButton.Click
         Clear()
     End Sub
 
+    'Checks to see if user inputs are valid.
     Function Validater(textBox As String, isInteger As Boolean) As String
         Dim holder As Integer
         Dim response As String
@@ -189,6 +204,7 @@ Public Class CarRental
         Return response
     End Function
 
+    'Stores calculated values and displays values when called for.
     Sub Summary(distanceDriven As Double, charge As Double, read As Boolean)
         Static totalCustomers As Integer
         Static totalDistance As Double
@@ -209,6 +225,7 @@ Public Class CarRental
         End If
     End Sub
 
+    'Clears all of the text boxes
     Sub Clear()
         CustomerNameTextBox.Clear()
         AddressTextBox.Clear()
@@ -229,6 +246,7 @@ Public Class CarRental
         CalculateButton.Enabled = True
     End Sub
 
+    'Prompts user if they want to exit, and exits program if confirmed.
     Private Sub ExitButton_Click(sender As Object, e As EventArgs) Handles ExitButton.Click
         Dim userInput As Double
 
